@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30711.63
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MassRobloxAssetStealer", "MassRobloxAssetStealer\MassRobloxAssetStealer.csproj", "{3950C4D3-8F10-4C06-8C01-8CCAADBC5961}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3950C4D3-8F10-4C06-8C01-8CCAADBC5961}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3950C4D3-8F10-4C06-8C01-8CCAADBC5961}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3950C4D3-8F10-4C06-8C01-8CCAADBC5961}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3950C4D3-8F10-4C06-8C01-8CCAADBC5961}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A109E61-112E-4DD2-BC43-B5DE836A75F7}
+	EndGlobalSection
+EndGlobal

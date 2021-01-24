@@ -1,0 +1,13 @@
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\obj\Debug\MassRobloxAssetStealer.csprojAssemblyReference.cache
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\obj\Debug\MassRobloxAssetStealer.Main.resources
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\obj\Debug\MassRobloxAssetStealer.Properties.Resources.resources
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\obj\Debug\MassRobloxAssetStealer.csproj.GenerateResource.cache
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\obj\Debug\MassRobloxAssetStealer.csproj.CoreCompileInputs.cache
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\bin\Debug\MassRobloxAssetStealer.exe.config
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\bin\Debug\MassRobloxAssetStealer.exe
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\bin\Debug\MassRobloxAssetStealer.pdb
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\obj\Debug\MassRobloxAssetStealer.csproj.CopyComplete
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\obj\Debug\MassRobloxAssetStealer.exe
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\obj\Debug\MassRobloxAssetStealer.pdb
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\bin\Debug\Newtonsoft.Json.xml
+E:\Sources\C#\Random Roblox Shit\MassRobloxAssetStealer\MassRobloxAssetStealer\obj\Debug\MassRobloxAssetStealer.csproj.Fody.CopyLocal.cache
