@@ -238,15 +238,15 @@ namespace MassRobloxAssetStealer
 
         private async void FetchIDs()
         {
-            string BaseUrl = $"https://catalog.roblox.com/v1/search/items?category=Clothing&limit=100&subcategory=Shirts&Keyword={KeywordBox.Text}";
-            string CatalogUrl = $"https://catalog.roblox.com/v1/search/items?category=Clothing&limit=100&subcategory=Shirts&Keyword={KeywordBox.Text}";
+            string BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Shirts";
+            string CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Shirts";
             string NextPage;
             
             switch (ItemTypeCombo.Text)
             {
                 case "Shirts":
-                    BaseUrl = "https://catalog.roblox.com/v1/search/items?category=Clothing&limit=100&subcategory=Shirts&Keyword={KeywordBox.Text}";
-                    CatalogUrl = "https://catalog.roblox.com/v1/search/items?category=Clothing&limit=100&subcategory=Shirts&Keyword={KeywordBox.Text}";
+                    BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Shirts";
+                    CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Shirts";
                     LogData(LogType.Info, "Fetching next page cursor...");
                     NextPage = GetNextPageCursor(CatalogURL: CatalogUrl);
                     LogData(LogType.Info, $"Found cursor: {NextPage}");
@@ -274,8 +274,8 @@ namespace MassRobloxAssetStealer
                     LogData(LogType.Info, $"Gathered a total of: {ItemIDs.Count} IDs");
                     break;
                 case "Pants":
-                    BaseUrl = "https://catalog.roblox.com/v1/search/items?category=Clothing&limit=100&subcategory=Pants&Keyword={KeywordBox.Text}";
-                    CatalogUrl = "https://catalog.roblox.com/v1/search/items?category=Clothing&limit=100&subcategory=Pants&Keyword={KeywordBox.Text}";
+                    BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Pants&Keyword={KeywordBox.Text}";
+                    CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Pants&Keyword={KeywordBox.Text}";
                     LogData(LogType.Info, "Fetching next page cursor...");
                     NextPage = GetNextPageCursor(CatalogURL: CatalogUrl);
                     LogData(LogType.Info, $"Found cursor: {NextPage}");
@@ -511,8 +511,11 @@ namespace MassRobloxAssetStealer
                         }
                         catch (Exception er) { Console.WriteLine(er.ToString()); }
                         LogData(LogType.System, "Opening directory!");
-                        Process.Start(SaveDirectory);
 
+                        ItemTypeCombo.Invoke(new Action(() =>
+                        {
+                            Process.Start(SaveDirectory+"\\"+ItemTypeCombo.Text);
+                        }));
 
                         Start.Invoke(new Action(() =>
                         {

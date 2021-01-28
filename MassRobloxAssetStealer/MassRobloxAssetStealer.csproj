@@ -43,7 +43,7 @@
       <HintPath>..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
     </Reference>
     <Reference Include="Guna.UI2">
-      <HintPath>..\..\..\..\..\_PC Data\_Setup Files\Development\Guna.UI2.dll</HintPath>
+      <HintPath>..\..\..\..\_Sirhurt Stuff\SirHurt V4 UI Redesign Iris V2\SirhurtNewUI\Guna.UI2.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -60,7 +60,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="VertexFramework">
-      <HintPath>..\..\..\VertexFramework.dll</HintPath>
+      <HintPath>..\..\..\..\VertexFramework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

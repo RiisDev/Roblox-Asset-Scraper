@@ -39,9 +39,15 @@ namespace MassRobloxAssetStealer
             this.guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(this.components);
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label6 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.KeywordBox = new Guna.UI2.WinForms.Guna2TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.ItemCount = new System.Windows.Forms.ComboBox();
+            this.PageCountForAudio = new System.Windows.Forms.ComboBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.Start = new Guna.UI2.WinForms.Guna2Button();
             this.label5 = new System.Windows.Forms.Label();
             this.ItemTypeCombo = new Guna.UI2.WinForms.Guna2ComboBox();
@@ -49,7 +55,7 @@ namespace MassRobloxAssetStealer
             this.FindLocation = new Guna.UI2.WinForms.Guna2Button();
             this.SaveLocTextBox = new Guna.UI2.WinForms.Guna2TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.PageCountForAudio = new System.Windows.Forms.ComboBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.TopBar.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -109,7 +115,7 @@ namespace MassRobloxAssetStealer
             this.LogBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.LogBox.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LogBox.ForeColor = System.Drawing.Color.White;
-            this.LogBox.Location = new System.Drawing.Point(44, 221);
+            this.LogBox.Location = new System.Drawing.Point(44, 256);
             this.LogBox.Name = "LogBox";
             this.LogBox.ReadOnly = true;
             this.LogBox.Size = new System.Drawing.Size(659, 101);
@@ -135,10 +141,16 @@ namespace MassRobloxAssetStealer
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.checkBox1);
+            this.panel1.Controls.Add(this.label11);
+            this.panel1.Controls.Add(this.label10);
+            this.panel1.Controls.Add(this.richTextBox1);
+            this.panel1.Controls.Add(this.label9);
+            this.panel1.Controls.Add(this.KeywordBox);
+            this.panel1.Controls.Add(this.label7);
             this.panel1.Controls.Add(this.ItemCount);
             this.panel1.Controls.Add(this.PageCountForAudio);
             this.panel1.Controls.Add(this.label6);
-            this.panel1.Controls.Add(this.richTextBox1);
             this.panel1.Controls.Add(this.Start);
             this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.ItemTypeCombo);
@@ -148,18 +160,29 @@ namespace MassRobloxAssetStealer
             this.panel1.Controls.Add(this.label3);
             this.panel1.Location = new System.Drawing.Point(42, 54);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(663, 161);
+            this.panel1.Size = new System.Drawing.Size(663, 196);
             this.panel1.TabIndex = 4;
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
-            // label6
+            // label11
             // 
-            this.label6.AutoSize = true;
-            this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(485, 136);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(177, 13);
-            this.label6.TabIndex = 15;
-            this.label6.Text = "Specific IDs (Seperate by new lines)";
+            this.label11.AutoSize = true;
+            this.label11.ForeColor = System.Drawing.Color.Red;
+            this.label11.Location = new System.Drawing.Point(236, 87);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(11, 13);
+            this.label11.TabIndex = 23;
+            this.label11.Text = "*";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.ForeColor = System.Drawing.Color.Red;
+            this.label10.Location = new System.Drawing.Point(251, 42);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(11, 13);
+            this.label10.TabIndex = 22;
+            this.label10.Text = "*";
             // 
             // richTextBox1
             // 
@@ -171,6 +194,53 @@ namespace MassRobloxAssetStealer
             this.richTextBox1.Size = new System.Drawing.Size(175, 130);
             this.richTextBox1.TabIndex = 14;
             this.richTextBox1.Text = "";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.ForeColor = System.Drawing.Color.Red;
+            this.label9.Location = new System.Drawing.Point(474, 14);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(11, 13);
+            this.label9.TabIndex = 21;
+            this.label9.Text = "*";
+            // 
+            // KeywordBox
+            // 
+            this.KeywordBox.Animated = true;
+            this.KeywordBox.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.KeywordBox.DefaultText = "";
+            this.KeywordBox.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
+            this.KeywordBox.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
+            this.KeywordBox.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.KeywordBox.DisabledState.Parent = this.KeywordBox;
+            this.KeywordBox.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
+            this.KeywordBox.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.KeywordBox.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.KeywordBox.FocusedState.Parent = this.KeywordBox;
+            this.KeywordBox.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.KeywordBox.ForeColor = System.Drawing.Color.White;
+            this.KeywordBox.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
+            this.KeywordBox.HoverState.Parent = this.KeywordBox;
+            this.KeywordBox.Location = new System.Drawing.Point(108, 115);
+            this.KeywordBox.Name = "KeywordBox";
+            this.KeywordBox.PasswordChar = '\0';
+            this.KeywordBox.PlaceholderText = "";
+            this.KeywordBox.SelectedText = "";
+            this.KeywordBox.ShadowDecoration.Parent = this.KeywordBox;
+            this.KeywordBox.Size = new System.Drawing.Size(322, 22);
+            this.KeywordBox.TabIndex = 18;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Verdana", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.ForeColor = System.Drawing.Color.White;
+            this.label7.Location = new System.Drawing.Point(3, 119);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(105, 14);
+            this.label7.TabIndex = 17;
+            this.label7.Text = "Search Param:";
             // 
             // ItemCount
             // 
@@ -205,6 +275,39 @@ namespace MassRobloxAssetStealer
             this.ItemCount.TabIndex = 13;
             this.ItemCount.Text = "100";
             // 
+            // PageCountForAudio
+            // 
+            this.PageCountForAudio.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.PageCountForAudio.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.PageCountForAudio.ForeColor = System.Drawing.Color.White;
+            this.PageCountForAudio.FormattingEnabled = true;
+            this.PageCountForAudio.Items.AddRange(new object[] {
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"});
+            this.PageCountForAudio.Location = new System.Drawing.Point(109, 84);
+            this.PageCountForAudio.Name = "PageCountForAudio";
+            this.PageCountForAudio.Size = new System.Drawing.Size(121, 21);
+            this.PageCountForAudio.TabIndex = 16;
+            this.PageCountForAudio.Text = "1";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.ForeColor = System.Drawing.Color.White;
+            this.label6.Location = new System.Drawing.Point(485, 136);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(177, 13);
+            this.label6.TabIndex = 15;
+            this.label6.Text = "Specific IDs (Seperate by new lines)";
+            // 
             // Start
             // 
             this.Start.CheckedState.Parent = this.Start;
@@ -213,7 +316,7 @@ namespace MassRobloxAssetStealer
             this.Start.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.Start.ForeColor = System.Drawing.Color.White;
             this.Start.HoverState.Parent = this.Start;
-            this.Start.Location = new System.Drawing.Point(251, 126);
+            this.Start.Location = new System.Drawing.Point(250, 152);
             this.Start.Name = "Start";
             this.Start.ShadowDecoration.Parent = this.Start;
             this.Start.Size = new System.Drawing.Size(180, 30);
@@ -327,35 +430,24 @@ namespace MassRobloxAssetStealer
             this.label3.TabIndex = 5;
             this.label3.Text = "Save Location:";
             // 
-            // PageCountForAudio
+            // checkBox1
             // 
-            this.PageCountForAudio.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
-            this.PageCountForAudio.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.PageCountForAudio.ForeColor = System.Drawing.Color.White;
-            this.PageCountForAudio.FormattingEnabled = true;
-            this.PageCountForAudio.Items.AddRange(new object[] {
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "7",
-            "8",
-            "9",
-            "10"});
-            this.PageCountForAudio.Location = new System.Drawing.Point(109, 84);
-            this.PageCountForAudio.Name = "PageCountForAudio";
-            this.PageCountForAudio.Size = new System.Drawing.Size(121, 21);
-            this.PageCountForAudio.TabIndex = 16;
-            this.PageCountForAudio.Text = "1";
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.ForeColor = System.Drawing.Color.White;
+            this.checkBox1.Location = new System.Drawing.Point(6, 165);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(183, 17);
+            this.checkBox1.TabIndex = 24;
+            this.checkBox1.Text = "Show Debug Console (Extra Info)";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
-            this.ClientSize = new System.Drawing.Size(736, 334);
+            this.ClientSize = new System.Drawing.Size(736, 369);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.LogBox);
@@ -395,6 +487,12 @@ namespace MassRobloxAssetStealer
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.ComboBox PageCountForAudio;
+        private Guna.UI2.WinForms.Guna2TextBox KeywordBox;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 
