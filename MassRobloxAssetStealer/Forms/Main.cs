@@ -468,6 +468,7 @@ namespace MassRobloxAssetStealer
             Directory.CreateDirectory(SaveDirectory + "\\Shirts");
             Directory.CreateDirectory(SaveDirectory + "\\Pants");
             Directory.CreateDirectory(SaveDirectory + "\\Audio");
+            Directory.CreateDirectory(SaveDirectory + "\\Face");
 
             LogBox.Clear();
             LogData(LogType.System, "Logging started!");
