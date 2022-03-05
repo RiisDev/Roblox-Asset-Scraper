@@ -151,7 +151,8 @@ namespace MassRobloxAssetStealer
                     int pfrom = HtmlParse.IndexOf("border-bottom item-name-container") + "border-bottom item-name-container".Length + 16;
                     int pto = HtmlParse.IndexOf("use-dynamic-thumbnail-lighting") - 260;
 
-                    string FullParse = HtmlParse.Substring(pfrom, pto - pfrom);
+                    string FullParseP1 = HtmlParse.Substring(pfrom, pto - pfrom);
+                    string FullParse = FullParseP1.Substring(0, FullParseP1.IndexOf("<"));
 
                     Name = FullParse;
                     Console.WriteLine($"Got asset name: {Name}");
@@ -168,35 +169,31 @@ namespace MassRobloxAssetStealer
 
         public void ScrapeAudioIds(string LibraryUrl)
         {
-            int pfrom = LibraryUrl.IndexOf("item-image-wrapper") + "item-image-wrapper".Length + 1;
-            int pto = LibraryUrl.IndexOf("PagingContainerDivTop");
+            bool DoneOne = false;
+            string[] Audios = LibraryUrl.Split(new string[] { "item-image-wrapper" }, StringSplitOptions.None);
 
-            string FirstParse = LibraryUrl.Substring(pfrom, pto -pfrom);
-            string[] AudioObj = FirstParse.Split(new string[] { "class=NotAPrice>Free" }, StringSplitOptions.None);
-
-            foreach (string SData in AudioObj)
+            foreach (string Audio in Audios)
             {
-                string AudioData = SData;
-                if (AudioData.Contains("CatalogItemInfoLabel"))
+                if (!DoneOne)
                 {
-                    AudioData = ReplaceFirst(AudioData, "></span></div>", "");
+                    DoneOne = true;
                 }
-                if (!AudioData.Contains("data-mediathumb-url="))
-                    return;
+                else if (!Audio.Contains("MediaPlayerControls"))
+                {}
+                else
+                {
+                    string NewBlock = Audio.Substring(Audio.IndexOf("img title"), Audio.IndexOf("textDisplay"));
+                    string SongTitleP1 = NewBlock.Substring(NewBlock.IndexOf("\"") + 1);
+                    string SongTitle = SongTitleP1.Substring(0, SongTitleP1.IndexOf("\""));
 
-                pfrom = AudioData.IndexOf("data-mediathumb-url=") + "data-mediathumb-url=".Length;
-                pto = AudioData.IndexOf("></span></div>");
-                Console.WriteLine(AudioData);
-                string AudioUrl = AudioData.Substring(pfrom, pto - pfrom);
+                    string SongUrlP1 = NewBlock.Substring(NewBlock.IndexOf("-url=") + 6);
+                    string SongUrl = SongUrlP1.Substring(0, SongUrlP1.IndexOf("\""));
 
-                pfrom = AudioData.IndexOf("\" title=\"") + "\" title=\"".Length;
-                pto = AudioData.LastIndexOf("\">");
-                string Name = AudioData.Substring(pfrom, pto - pfrom);
+                    SongData.Add(SongTitle, SongUrl);
 
-                SongData.Add(Name, AudioUrl);
-
-                LogData(LogType.Info, $"Parsed Song: {AudioUrl}");
-            }
+                    LogData(LogType.Info, $"Parsed Song: {SongUrl}");
+                }
+            }            
         }
 
         public string ParseFile(string File)
@@ -238,15 +235,15 @@ namespace MassRobloxAssetStealer
 
         private async void FetchIDs()
         {
-            string BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Shirts";
-            string CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Shirts";
+            string BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicShirts";
+            string CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicShirts";
             string NextPage;
             
             switch (ItemTypeCombo.Text)
             {
                 case "Shirts":
-                    BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Shirts";
-                    CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Shirts";
+                    BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicShirts";
+                    CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicShirts";
                     LogData(LogType.Info, "Fetching next page cursor...");
                     NextPage = GetNextPageCursor(CatalogURL: CatalogUrl);
                     LogData(LogType.Info, $"Found cursor: {NextPage}");
@@ -274,8 +271,8 @@ namespace MassRobloxAssetStealer
                     LogData(LogType.Info, $"Gathered a total of: {ItemIDs.Count} IDs");
                     break;
                 case "Pants":
-                    BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Pants&Keyword={KeywordBox.Text}";
-                    CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=Pants&Keyword={KeywordBox.Text}";
+                    BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicPants";
+                    CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicPants";
                     LogData(LogType.Info, "Fetching next page cursor...");
                     NextPage = GetNextPageCursor(CatalogURL: CatalogUrl);
                     LogData(LogType.Info, $"Found cursor: {NextPage}");
@@ -308,8 +305,8 @@ namespace MassRobloxAssetStealer
                     {
                         using (WebClient client = new WebClient())
                         {
-                            Console.WriteLine($"https://search.roblox.com/catalog/contents?CatalogContext=2&SortAggregation=5&LegendExpanded=true&Category=9&PageNumber={i}&Keyword={KeywordBox.Text}");
-                            ScrapeAudioIds(client.DownloadString($"https://search.roblox.com/catalog/contents?CatalogContext=2&SortAggregation=5&LegendExpanded=true&Category=9&PageNumber={i}&Keyword={KeywordBox.Text}"));
+                            Console.WriteLine($"https://api.irisapp.ca/RobloxAPI/AudioGrabber.php?AIO={KeywordBox.Text}&PGN={i}");
+                            ScrapeAudioIds(client.DownloadString($"https://api.irisapp.ca/RobloxAPI/AudioGrabber.php?AIO={KeywordBox.Text}&PGN={i}"));
                         }
                     }
                     LogData(LogType.Info, $"Gathered a total of: {SongData.Count} IDs");
