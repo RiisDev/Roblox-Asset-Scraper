@@ -24,7 +24,7 @@ namespace MassRobloxAssetStealer
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
-
+        int FinishedItems = 0;
         public List<string> ItemIDs = new List<string>();
         public Dictionary<string, string> SongData = new Dictionary<string, string>();
 
@@ -42,9 +42,17 @@ namespace MassRobloxAssetStealer
             Info,
         }
 
+        public enum ClothingType
+        {
+            Accessories,
+            ClassicPants,
+            ClassicShirts
+        }
+
         public void LogData(LogType logType, string Message = "")
         {
-            LogBox.Invoke(new Action(() => {
+            LogBox.Invoke(new Action(() =>
+            {
                 switch (logType)
                 {
                     case LogType.System:
@@ -61,7 +69,7 @@ namespace MassRobloxAssetStealer
                         break;
                     default:
                         break;
-                } 
+                }
             }));
         }
 
@@ -71,6 +79,14 @@ namespace MassRobloxAssetStealer
             ShowWindow(GetConsoleWindow(), 0);
             LogBox.Clear();
             LogData(LogType.System, "Logging started!");
+        }
+
+        private void DoError(string ErrorMessage)
+        {
+            LogData(LogType.Error, $"There was an error while downloading, please open an issue on github!");
+            using (StreamWriter writer = new StreamWriter($"{SaveDirectory}\\temp\\ErrorLog.txt"))
+                writer.WriteLine(ErrorMessage);
+            Process.Start($"{SaveDirectory}\\temp\\ErrorLog.txt");
         }
 
         public string ReplaceFirst(string text, string search, string replace)
@@ -114,8 +130,6 @@ namespace MassRobloxAssetStealer
                 JToken Data = JToken.Parse(JsonData);
 
                 Cursor = Data["nextPageCursor"].ToString();
-
-                Console.WriteLine($"Got cursor data: {Cursor}");
             }
 
             return Cursor;
@@ -140,31 +154,7 @@ namespace MassRobloxAssetStealer
 
         public string GetAssetName(string ID)
         {
-            string Name = string.Empty;
-
-            using (WebClient client = new WebClient())
-            {
-                try
-                {
-                    string HtmlParse = client.DownloadString($"https://www.roblox.com/catalog/{ID}");
-
-                    int pfrom = HtmlParse.IndexOf("border-bottom item-name-container") + "border-bottom item-name-container".Length + 16;
-                    int pto = HtmlParse.IndexOf("use-dynamic-thumbnail-lighting") - 260;
-
-                    string FullParseP1 = HtmlParse.Substring(pfrom, pto - pfrom);
-                    string FullParse = FullParseP1.Substring(0, FullParseP1.IndexOf("<"));
-
-                    Name = FullParse;
-                    Console.WriteLine($"Got asset name: {Name}");
-                }
-                catch
-                {
-                    Name = ID;
-                    Console.WriteLine($"Failed to find asset name: {Name}");
-                }
-            }
-
-            return Name;
+            return ID;
         }
 
         public void ScrapeAudioIds(string LibraryUrl)
@@ -206,19 +196,20 @@ namespace MassRobloxAssetStealer
                 pfrom = File.IndexOf("<Content name=\"PantsTemplate\">") + "<Content name=\"ShirtTemplate\">".Length + 15;
 
             int pto = File.IndexOf("</Content>") - 14;
-            
-
-
-            Console.WriteLine(File);
 
             string Parsed = File.Substring(pfrom, pto - pfrom).Replace("http://www.roblox.com/asset/?id=", "https://assetdelivery.roblox.com/v1/asset?id=");
             LogData(LogType.Info, $"Parsed Url: {Parsed}");
             return Parsed;
         }
 
-        public string ReplaceInvalidChars(string filename)
+        public string GetValidName(string filename)
         {
-            return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+            string Final = string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
+
+            if (Final.Contains(";"))
+                Final = Final.Substring(Final.LastIndexOf(";") + 1);
+
+            return Final;
         }
 
         private void ManualIDs()
@@ -233,70 +224,115 @@ namespace MassRobloxAssetStealer
             }
         }
 
-        private async void FetchIDs()
+        private void GetClothingIds(ClothingType type)
         {
-            string BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicShirts";
-            string CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicShirts";
-            string NextPage;
-            
+            string PageCur;
+            string BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=3&limit=100&subcategory={type}";
+            string CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=3&limit=100&subcategory={type}";
+
+            if (type == ClothingType.Accessories)
+            {
+                BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=11&limit=100&subcategory={type}";
+                CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=11&limit=100&subcategory={type}";
+            }
+
+            LogData(LogType.Info, $"Detected type as: {type}");
+            LogData(LogType.Info, "Cathering Item IDs...");
+
+            for (int i = 1; i <= (int.Parse(ItemCount.Text) / 100); i++)
+            {
+                if (i == 1)
+                {
+                    GatherIDs(CatalogUrl);
+                }
+                else
+                {
+                    PageCur = GetNextPageCursor(CatalogUrl);
+                    LogData(LogType.Info, $"Going to next page: {PageCur}");
+                    CatalogUrl = BaseUrl + $"&cursor={PageCur}";
+                    LogData(LogType.Info, $"New catalog URL: {CatalogUrl}");
+                    GatherIDs(CatalogUrl);
+                }
+            }
+        }
+
+        private void StartSave(ClothingType type)
+        {
+            string DirType = type.ToString().Replace("Classic", "");
+            LogData(LogType.Info, $"Initiating first download step...");
+            new Thread(() =>
+            {
+                foreach (string ID in ItemIDs)
+                {
+                    using (WebClient client = new WebClient())
+                    {
+                        if (type == ClothingType.Accessories)
+                        {
+                            client.DownloadFileCompleted += (s, e) =>
+                            {
+                                LogData(LogType.Info, $"Downloaded: https://www.roblox.com/catalog/{ID}");
+                            };
+                            client.DownloadFileAsync(new Uri($"https://assetdelivery.roblox.com/v1/asset?id={ID}"), $"{SaveDirectory}\\Accessories\\{ID}.rbxm");
+                        }
+                        else
+                        {
+                            try
+                            {
+                                client.DownloadFileAsync(new Uri($"https://assetdelivery.roblox.com/v1/asset?id={ID}"), $"{SaveDirectory}\\temp\\{ID}");
+                                client.DownloadFileCompleted += (erere, ererer) =>
+                                {
+                                    string FileData;
+                                    try
+                                    {
+                                        FileData = File.ReadAllText($"{SaveDirectory}\\temp\\{ID}");
+                                    }
+                                    catch (Exception er) { FileData = ""; Console.WriteLine(er.ToString()); }
+
+                                    if (FileData.Contains("roblox"))
+                                    {
+                                        try
+                                        {
+                                            File.Delete($"{SaveDirectory}\\temp\\{ID}");
+                                        }
+                                        catch (Exception er) { Console.WriteLine(er.ToString()); }
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            File.Move($"{SaveDirectory}\\temp\\{ID}", $"{SaveDirectory}\\Shirts\\{GetValidName(GetAssetName(ID))}.png");
+                                        }
+                                        catch (Exception er) { Console.WriteLine(er.ToString()); }
+                                        return;
+                                    }
+
+                                    Console.WriteLine(ParseFile(FileData));
+                                    try
+                                    {
+                                        client.DownloadFile(ParseFile(FileData), $"{SaveDirectory}\\Shirts\\{GetValidName(GetAssetName(ID))}.png");
+                                    }
+                                    catch (Exception er) { Console.WriteLine(er.ToString()); }
+                                    FinishedItems++;
+                                    Console.WriteLine("Finished a download!");
+                                };
+                            }
+                            catch { }
+                        }
+                    }
+                }
+            }).Start();
+        }
+
+        private void FetchIDs()
+        {
             switch (ItemTypeCombo.Text)
             {
                 case "Shirts":
-                    BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicShirts";
-                    CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicShirts";
-                    LogData(LogType.Info, "Fetching next page cursor...");
-                    NextPage = GetNextPageCursor(CatalogURL: CatalogUrl);
-                    LogData(LogType.Info, $"Found cursor: {NextPage}");
-                    LogData(LogType.Info, "Cathering Item IDs...");
-                    for (int i = 1; i <= (int.Parse(ItemCount.Text) / 100); i++)
-                    {
-                        Console.WriteLine(i);
-                        Console.WriteLine((int.Parse(ItemCount.Text) / 100));
-
-                        if (i == 1)
-                        {
-                            GatherIDs(CatalogUrl);
-                        }
-                        else
-                        {
-                            CatalogUrl = BaseUrl + $"&cursor={GetNextPageCursor(CatalogUrl)}";
-                            Console.WriteLine(CatalogUrl);
-                            GatherIDs(CatalogUrl);
-                        }
-                    }
-                    while (ItemIDs.Count != (int.Parse(ItemCount.Text)))
-                    {
-                        await Task.Delay(25);
-                    }
+                    GetClothingIds(ClothingType.ClassicShirts);
                     LogData(LogType.Info, $"Gathered a total of: {ItemIDs.Count} IDs");
                     break;
                 case "Pants":
-                    BaseUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicPants";
-                    CatalogUrl = $"https://catalog.roblox.com/v1/search/items?Keyword={KeywordBox.Text}&category=Clothing&limit=100&subcategory=ClassicPants";
-                    LogData(LogType.Info, "Fetching next page cursor...");
-                    NextPage = GetNextPageCursor(CatalogURL: CatalogUrl);
-                    LogData(LogType.Info, $"Found cursor: {NextPage}");
-                    LogData(LogType.Info, "Cathering Item IDs...");
-                    for (int i = 1; i <= (int.Parse(ItemCount.Text) / 100); i++)
-                    {
-                        Console.WriteLine(i);
-                        Console.WriteLine((int.Parse(ItemCount.Text) / 100));
-
-                        if (i == 1)
-                        {
-                            GatherIDs(CatalogUrl);
-                        }
-                        else
-                        {
-                            CatalogUrl = BaseUrl + $"&cursor={GetNextPageCursor(CatalogUrl)}";
-                            Console.WriteLine(CatalogUrl);
-                            GatherIDs(CatalogUrl);
-                        }
-                    }
-                    while (ItemIDs.Count != (int.Parse(ItemCount.Text)))
-                    {
-                        await Task.Delay(25);
-                    }
+                    GetClothingIds(ClothingType.ClassicPants);
                     LogData(LogType.Info, $"Gathered a total of: {ItemIDs.Count} IDs");
                     break;
                 case "Audio":
@@ -305,11 +341,14 @@ namespace MassRobloxAssetStealer
                     {
                         using (WebClient client = new WebClient())
                         {
-                            Console.WriteLine($"https://api.irisapp.ca/RobloxAPI/AudioGrabber.php?AIO={KeywordBox.Text}&PGN={i}");
                             ScrapeAudioIds(client.DownloadString($"https://api.irisapp.ca/RobloxAPI/AudioGrabber.php?AIO={KeywordBox.Text}&PGN={i}"));
                         }
                     }
                     LogData(LogType.Info, $"Gathered a total of: {SongData.Count} IDs");
+                    break;
+                case "Accessories":
+                    GetClothingIds(ClothingType.Accessories);
+                    LogData(LogType.Info, $"Gathered a total of: {ItemIDs.Count} IDs");
                     break;
             }
         }
@@ -319,110 +358,10 @@ namespace MassRobloxAssetStealer
             switch (ItemTypeCombo.Text)
             {
                 case "Shirts":
-                    LogData(LogType.Info, $"Initiating first download step...");
-                    new Thread(() =>
-                    {
-                        foreach (string IDs in ItemIDs)
-                        {
-                            using (WebClient client = new WebClient())
-                            {
-                                try
-                                {
-                                    client.DownloadFileAsync(new Uri($"https://assetdelivery.roblox.com/v1/asset?id={IDs}"), $"{SaveDirectory}\\temp\\{IDs}");
-                                    client.DownloadFileCompleted += (erere, ererer) =>
-                                    {
-                                        string FileData;
-                                        try
-                                        {
-                                            FileData = File.ReadAllText($"{SaveDirectory}\\temp\\{IDs}");
-                                        }
-                                        catch (Exception er) { FileData = ""; Console.WriteLine(er.ToString()); }
-
-                                        if (FileData.Contains("roblox"))
-                                        {
-                                            try
-                                            {
-                                                File.Delete($"{SaveDirectory}\\temp\\{IDs}");
-                                            }
-                                            catch (Exception er) { Console.WriteLine(er.ToString()); }
-                                        }
-                                        else
-                                        {
-                                            try
-                                            {
-                                                File.Move($"{SaveDirectory}\\temp\\{IDs}", $"{SaveDirectory}\\Shirts\\{ReplaceInvalidChars(GetAssetName(IDs))}.png");
-                                            }
-                                            catch (Exception er) { Console.WriteLine(er.ToString()); }
-                                            return;
-                                        }
-
-                                        Console.WriteLine(ParseFile(FileData));
-                                        try
-                                        {
-                                            client.DownloadFile(ParseFile(FileData), $"{SaveDirectory}\\Shirts\\{ReplaceInvalidChars(GetAssetName(IDs))}.png");
-                                        }
-                                        catch (Exception er) { Console.WriteLine(er.ToString()); }
-                                        Console.WriteLine("Finished a download!");
-                                    };
-                                }
-                                catch {}
-                            }
-                        }
-                        Console.WriteLine("Done!");
-                    }).Start();
+                    StartSave(ClothingType.ClassicShirts);
                     break;
                 case "Pants":
-                    LogData(LogType.Info, $"Initiating first download step...");
-                    new Thread(() =>
-                    {
-                        foreach (string IDs in ItemIDs)
-                        {
-                            using (WebClient client = new WebClient())
-                            {
-                                try
-                                {
-                                    client.DownloadFileAsync(new Uri($"https://assetdelivery.roblox.com/v1/asset?id={IDs}"), $"{SaveDirectory}\\temp\\{IDs}");
-                                    client.DownloadFileCompleted += (erere, ererer) =>
-                                    {
-                                        string FileData;
-                                        try
-                                        {
-                                            FileData = File.ReadAllText($"{SaveDirectory}\\temp\\{IDs}");
-                                        }
-                                        catch (Exception er) { FileData = ""; Console.WriteLine(er.ToString()); }
-
-                                        if (FileData.Contains("roblox"))
-                                        {
-                                            try
-                                            {
-                                                File.Delete($"{SaveDirectory}\\temp\\{IDs}");
-                                            }
-                                            catch (Exception er) { Console.WriteLine(er.ToString()); }
-                                        }
-                                        else
-                                        {
-                                            try
-                                            {
-                                                File.Move($"{SaveDirectory}\\temp\\{IDs}", $"{SaveDirectory}\\Pants\\{ReplaceInvalidChars(GetAssetName(IDs))}.png");
-                                            }
-                                            catch (Exception er) { Console.WriteLine(er.ToString()); }
-                                            return;
-                                        }
-
-                                        Console.WriteLine(ParseFile(FileData));
-                                        try
-                                        {
-                                            client.DownloadFile(ParseFile(FileData), $"{SaveDirectory}\\Pants\\{ReplaceInvalidChars(GetAssetName(IDs))}.png");
-                                        }
-                                        catch (Exception er) { Console.WriteLine(er.ToString()); }
-                                        Console.WriteLine("Finished a download!");
-                                    };
-                                }
-                                catch (Exception er) { Console.WriteLine(er.ToString()); }
-                            }
-                        }
-                        Console.WriteLine("Done!");
-                    }).Start();
+                    StartSave(ClothingType.ClassicPants);
                     break;
                 case "Audio":
                     foreach (string FName in SongData.Keys)
@@ -433,12 +372,25 @@ namespace MassRobloxAssetStealer
                             {
                                 try
                                 {
-                                    client.DownloadFile(SongData[FName], $"{SaveDirectory}\\Audio\\{ReplaceInvalidChars(GetAssetName(FName))}.mp3");
+                                    string FileName = GetValidName(GetAssetName(FName));
+
+                                    client.DownloadFileCompleted += (s, e) =>
+                                    {
+                                        LogData(LogType.Info, $"Finished downloading: {FileName}.mp3");
+                                        FinishedItems++;
+                                    };
+
+                                    client.DownloadFile(SongData[FName], $"{SaveDirectory}\\Audio\\{FileName}.mp3");
                                 }
-                                catch (Exception er) { Console.WriteLine(er.ToString()); }
+                                catch (Exception er) {
+                                    DoError(er.Message);
+                                }
                             }
                         }).Start();
                     }
+                    break;
+                case "Accessories":
+                    StartSave(ClothingType.Accessories);
                     break;
             }
         }
@@ -449,15 +401,15 @@ namespace MassRobloxAssetStealer
 
             Start.Enabled = false;
             ItemIDs.Clear();
-            if (Directory.Exists(SaveDirectory + "\\temp"))
+
+            if (Directory.Exists($"{SaveDirectory}\\temp"))
             {
-                foreach (string Files in Directory.GetFiles(SaveDirectory + "\\temp"))
+                try
                 {
-                    try
-                    {
-                        File.Delete(Files);
-                    }
-                    catch (Exception er) { Console.WriteLine(er.ToString()); }
+                    Directory.Delete($"{SaveDirectory}\\temp");
+                }
+                catch {
+                    MessageBox.Show("Unable to delete temp folder, please make sure you haven't touched it!", "Asset Downloader", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
@@ -465,19 +417,23 @@ namespace MassRobloxAssetStealer
             Directory.CreateDirectory(SaveDirectory + "\\Shirts");
             Directory.CreateDirectory(SaveDirectory + "\\Pants");
             Directory.CreateDirectory(SaveDirectory + "\\Audio");
-            Directory.CreateDirectory(SaveDirectory + "\\Face");
+            Directory.CreateDirectory(SaveDirectory + "\\Accessories");
 
             LogBox.Clear();
             LogData(LogType.System, "Logging started!");
-            await Task.Delay(100);
-            LogData(LogType.System, $"Fetching {ItemCount.Text} IDs for assets: {ItemTypeCombo.Text}");
-            FetchIDs();
-            await Task.Delay(100);
+            await Task.Delay(15);
+            if (!ManualInputCheck.Checked)
+            {
+                LogData(LogType.System, $"Fetching {ItemCount.Text} IDs for assets: {ItemTypeCombo.Text}");
+                FetchIDs();
+            }
+            await Task.Delay(15);
             LogData(LogType.System, "Gather specific IDs...");
             ManualIDs();
-            await Task.Delay(100);
+            await Task.Delay(15);
             LogData(LogType.System, $"Done fetching asset IDs!");
             LogData(LogType.System, $"Continuing to download in ~3 seconds!");
+            ItemIDs = ItemIDs.Distinct().ToList();
             await Task.Delay(2500);
             StartSave();
 
@@ -488,9 +444,10 @@ namespace MassRobloxAssetStealer
                 for (; ; )
                 {
                     await Task.Delay(50);
-                    if (Process.GetCurrentProcess().Threads.Count < 50)
+
+                    if (FinishedItems >= ItemIDs.Count - Math.Floor((ItemIDs.Count / 3) + .0))
                     {
-                        LogData(LogType.System, "System threads seem to be going lower, finished?");
+                        LogData(LogType.System, "Finished count is closing on ItemCount!");
 
                         ItemTypeCombo.Invoke(new Action(() =>
                         {
@@ -502,23 +459,18 @@ namespace MassRobloxAssetStealer
                             }
                         }));
 
-                        try
-                        {
-                            Array.ForEach(Directory.GetFiles($"{SaveDirectory}\\temp"), x => File.Delete(x));
-                            Directory.Delete($"{SaveDirectory}\\temp");
-                        }
-                        catch (Exception er) { Console.WriteLine(er.ToString()); }
                         LogData(LogType.System, "Opening directory!");
 
                         ItemTypeCombo.Invoke(new Action(() =>
                         {
-                            Process.Start(SaveDirectory+"\\"+ItemTypeCombo.Text);
+                            Process.Start($"{SaveDirectory}\\{ItemTypeCombo.Text}");
                         }));
 
                         Start.Invoke(new Action(() =>
                         {
                             Start.Enabled = true;
                         }));
+
                         break;
                     }
                 }
@@ -539,6 +491,10 @@ namespace MassRobloxAssetStealer
                 PageCountForAudio.Visible = true;
                 ItemCount.Visible = false;
                 label5.Text = "Page Count";
+            }
+            else if (ItemTypeCombo.Text == "Accessories")
+            {
+                MessageBox.Show("These will all download as RBXM!", "Asset Downloader", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
@@ -562,6 +518,16 @@ namespace MassRobloxAssetStealer
             else {
                 ShowWindow(GetConsoleWindow(), 0);
             }
+        }
+
+        private void Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                Array.ForEach(Directory.GetFiles($"{SaveDirectory}\\temp"), x => File.Delete(x));
+                Directory.Delete($"{SaveDirectory}\\temp");
+            }
+            catch (Exception er) { Console.WriteLine(er.ToString()); }
         }
     }
 }

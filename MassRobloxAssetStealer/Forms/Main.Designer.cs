@@ -39,6 +39,7 @@ namespace MassRobloxAssetStealer
             this.guna2DragControl1 = new Guna.UI2.WinForms.Guna2DragControl(this.components);
             this.label2 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -55,7 +56,7 @@ namespace MassRobloxAssetStealer
             this.FindLocation = new Guna.UI2.WinForms.Guna2Button();
             this.SaveLocTextBox = new Guna.UI2.WinForms.Guna2TextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.ManualInputCheck = new System.Windows.Forms.CheckBox();
             this.TopBar.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -141,6 +142,7 @@ namespace MassRobloxAssetStealer
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.ManualInputCheck);
             this.panel1.Controls.Add(this.checkBox1);
             this.panel1.Controls.Add(this.label11);
             this.panel1.Controls.Add(this.label10);
@@ -163,6 +165,18 @@ namespace MassRobloxAssetStealer
             this.panel1.Size = new System.Drawing.Size(663, 196);
             this.panel1.TabIndex = 4;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.ForeColor = System.Drawing.Color.White;
+            this.checkBox1.Location = new System.Drawing.Point(6, 165);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(183, 17);
+            this.checkBox1.TabIndex = 24;
+            this.checkBox1.Text = "Show Debug Console (Extra Info)";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // label11
             // 
@@ -302,11 +316,11 @@ namespace MassRobloxAssetStealer
             // 
             this.label6.AutoSize = true;
             this.label6.ForeColor = System.Drawing.Color.White;
-            this.label6.Location = new System.Drawing.Point(485, 136);
+            this.label6.Location = new System.Drawing.Point(537, 136);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(177, 13);
+            this.label6.Size = new System.Drawing.Size(83, 13);
             this.label6.TabIndex = 15;
-            this.label6.Text = "Specific IDs (Seperate by new lines)";
+            this.label6.Text = "Manual ID Input";
             // 
             // Start
             // 
@@ -352,7 +366,7 @@ namespace MassRobloxAssetStealer
             "Shirts",
             "Pants",
             "Audio",
-            "Face"});
+            "Accessories"});
             this.ItemTypeCombo.ItemsAppearance.Parent = this.ItemTypeCombo;
             this.ItemTypeCombo.Location = new System.Drawing.Point(109, 42);
             this.ItemTypeCombo.Name = "ItemTypeCombo";
@@ -430,17 +444,16 @@ namespace MassRobloxAssetStealer
             this.label3.TabIndex = 5;
             this.label3.Text = "Save Location:";
             // 
-            // checkBox1
+            // ManualInputCheck
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.ForeColor = System.Drawing.Color.White;
-            this.checkBox1.Location = new System.Drawing.Point(6, 165);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(183, 17);
-            this.checkBox1.TabIndex = 24;
-            this.checkBox1.Text = "Show Debug Console (Extra Info)";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.ManualInputCheck.AutoSize = true;
+            this.ManualInputCheck.ForeColor = System.Drawing.Color.White;
+            this.ManualInputCheck.Location = new System.Drawing.Point(499, 165);
+            this.ManualInputCheck.Name = "ManualInputCheck";
+            this.ManualInputCheck.Size = new System.Drawing.Size(159, 17);
+            this.ManualInputCheck.TabIndex = 25;
+            this.ManualInputCheck.Text = "Only download manual input";
+            this.ManualInputCheck.UseVisualStyleBackColor = true;
             // 
             // Main
             // 
@@ -456,6 +469,7 @@ namespace MassRobloxAssetStealer
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Main";
             this.TopMost = true;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.Load += new System.EventHandler(this.Main_Load);
             this.TopBar.ResumeLayout(false);
             this.TopBar.PerformLayout();
@@ -493,6 +507,7 @@ namespace MassRobloxAssetStealer
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox ManualInputCheck;
     }
 }
 
