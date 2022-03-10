@@ -399,7 +399,6 @@ namespace MassRobloxAssetStealer
         {
             MessageBox.Show("The downloader is more stable if it has focus (dont click away)!", "Asset Downloader", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-            Start.Enabled = false;
             ItemIDs.Clear();
 
             if (Directory.Exists($"{SaveDirectory}\\temp"))
@@ -464,11 +463,6 @@ namespace MassRobloxAssetStealer
                         ItemTypeCombo.Invoke(new Action(() =>
                         {
                             Process.Start($"{SaveDirectory}\\{ItemTypeCombo.Text}");
-                        }));
-
-                        Start.Invoke(new Action(() =>
-                        {
-                            Start.Enabled = true;
                         }));
 
                         break;
